@@ -5,99 +5,55 @@ request.open("GET", "./menu.json");
 request.responseType = "json";
 request.send();
 
+const source = document.querySelector("#card_templ").innerHTML.trim();
+const template = Handlebars.compile(source);
+
 request.onload = function () {
   const menu = request.response;
 
-  const cardsMarkUp = createGalCardsMarkUp(menu);
+  const markup = menu.reduce((acc, curVal) => acc + template(curVal), "");
 
-  galContainer.insertAdjacentHTML("beforeend", cardsMarkUp);
-
-  function createGalCardsMarkUp(collection) {
-    return collection
-      .map(({ description, image, name, price, ingredients }) => {
-        return `
-    <li class="menu__item">
-        <article class="card">
-            <img
-                src="${image}"
-                alt="${name}"
-                class="card__image"
-            />
-            <div class="card__content">
-                <h2 class="card__name">"${name}"</h2>
-                <p class="card__price">
-                    <i class="material-icons"> monetization_on </i>
-                    "${price}" кредитов
-                </p>
-
-                <p class="card__descr">"${description}"</p>
-
-        <ul class="tag-list">
-          <li class="tag-list__item">${ingredients[0]}</li>
-          <li class="tag-list__item">${ingredients[1]}</li>
-          <li class="tag-list__item">${ingredients[2]}</li>
-          <li class="tag-list__item">${ingredients[3]}</li>
-          <li class="tag-list__item">${ingredients[4]}</li>
-          <li class="tag-list__item">${ingredients[5]}</li>
-        </ul>
-        
-      </div>
-      <button class="card__button button">
-      <i class="material-icons button__icon"> shopping_cart </i>
-      В корзину
-    </button>
-  </article>
-          `;
-        // <li class="gallery__item">
-        //   <a class="gallery__link" href="${original}">
-        //     <img class="gallery__image"
-        //       src="${preview}"
-        //       data-source="${original}"
-        //       alt="${description}"
-        //     />
-        //   </a>
-        // </li>
-      })
-      .join("");
-  }
-  //     <li class="menu__item">
-  //   <article class="card">
-  //     <img
-  //       src="https://s1.eda.ru/StaticContent/Photos/140812180013/140820212258/p_O.jpg"
-  //       alt="Картофель, запеченный в мундире"
-  //       class="card__image"
-  //     />
-  //     <div class="card__content">
-  //       <h2 class="card__name">Картофель, запеченный в мундире</h2>
-  //       <p class="card__price">
-  //         <i class="material-icons"> monetization_on </i>
-  //         100 кредитов
-  //       </p>
-
-  //       <p class="card__descr">
-  //         Ароматный, сытный, шипящий домашний картофель, фаршированный
-  //         сметанно-беконной начинкой, — это очень простой и очень эффектный способ
-  //         накормить большое количество человек, практически не потратив на готовку
-  //         ни сил, ни времени. Обычную картошку при желании тут можно заменить на
-  //         сладкий батат, а в начинку добавить, к примеру, кукурузу или сладкий
-  //         красный перец.
-  //       </p>
-
-  //       <ul class="tag-list">
-  //         <li class="tag-list__item">Картофель</li>
-  //         <li class="tag-list__item">Чеснок</li>
-  //         <li class="tag-list__item">Сметана</li>
-  //         <li class="tag-list__item">Бекон</li>
-  //         <li class="tag-list__item">Твердый сыр</li>
-  //         <li class="tag-list__item">Зеленый лук</li>
-  //       </ul>
-  //     </div>
-  //     <button class="card__button button">
-  //       <i class="material-icons button__icon"> shopping_cart </i>
-  //       В корзину
-  //     </button>
-  //   </article>
-
-  //   console.dir(menu[0]);
+  const container = document.querySelector(".menu");
+  container.innerHTML = markup;
 };
-console.log(galContainer);
+
+const Theme = {
+  LIGHT: "light-theme",
+  DARK: "dark-theme",
+};
+
+const bodyRef = document.body;
+const switchcherRef = document.querySelector("#theme-switch-toggle");
+// console.log("swither: ", switchcherRef.checked);
+
+if (localStorage.getItem("theme") === null) {
+  localStorage.setItem("theme", Theme.LIGHT);
+  bodyRef.classList.add(Theme.LIGHT);
+  // page.classList.toggle('light-theme');
+} else {
+  bodyRef.classList.add(localStorage.getItem("theme"));
+  switchcherRef.checked = true;
+  // console.log("theme: ", localStorage.getItem("theme"));
+}
+
+const input = document.querySelector(".theme-switch__toggle");
+const log = document.getElementById("values");
+
+input.addEventListener("change", updateValue);
+
+function updateValue(e) {
+  // console.log("swither: ", switchcherRef.checked);
+
+  // console.log("toggle");
+  if (localStorage.getItem("theme") === Theme.LIGHT) {
+    localStorage.setItem("theme", Theme.DARK);
+
+    bodyRef.classList.remove(Theme.LIGHT);
+    bodyRef.classList.add(Theme.DARK);
+  } else {
+    localStorage.setItem("theme", Theme.LIGHT);
+
+    bodyRef.classList.remove(Theme.DARK);
+    bodyRef.classList.add(Theme.LIGHT);
+  }
+}
