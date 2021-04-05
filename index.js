@@ -5,6 +5,8 @@ request.open("GET", "./menu.json");
 request.responseType = "json";
 request.send();
 
+
+
 const source = document.querySelector("#card_templ").innerHTML.trim();
 const template = Handlebars.compile(source);
 
